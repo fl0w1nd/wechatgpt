@@ -63,12 +63,11 @@ async function loginWechaty() {
         const { heart } = config;
         if (heart.enable) {
             const startTime = moment()
-            const { interval: timeInterval, contactName } = heart;
+            const { timeInterval, contactName } = heart;
             if (interval) {
                 clearInterval(interval);
             }
             interval = setInterval(async () => {
-                const { timeInterval, contactName } = heart;
                 const contact = await bot.Contact.find({ name: contactName });
                 if (contact) {
                     await contact.say(`我还活着！已经活了 ${moment().diff(startTime, 'minutes')}分钟 ${moment().format("YYYY-MM-DD HH:mm:ss")}`);
