@@ -9,13 +9,13 @@ const config = require('./config');
 const moment = require('moment');
 
 let transporter;
-
+let sendCount = 0;
 let interval;
 
 async function saveQrCode(qrcodeValue) {
     qrTerm.generate(qrcodeValue, { small: true })  // show qrcode on console
     const { email } = config;
-    if (!email.enable) {
+    if (!email.enable || sendCount >= 3) {
         return
     }
     const { loginEmail, targetEmail } = email;
@@ -45,6 +45,7 @@ async function saveQrCode(qrcodeValue) {
         }]
     })
     console.log(`已发送二维码链接到邮箱：${info.messageId}`)
+    sendCount++;
 }
 
 async function loginWechaty() {
@@ -58,6 +59,7 @@ async function loginWechaty() {
 
     bot.on('login', async user => {
         console.log(`登录成功，用户名：${user}`)
+        sendCount = 0;
         const { heart } = config;
         if (heart.enable) {
             const startTime = moment()
@@ -76,6 +78,7 @@ async function loginWechaty() {
 
     bot.on('logout', async user => {
         console.log(`用户${user}已退出登录`)
+        sendCount = 0;
         process.exit(0)
     })
 
